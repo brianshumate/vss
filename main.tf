@@ -12,6 +12,10 @@ terraform {
 # Variables
 # -----------------------------------------------------------------------
 
+variable "docker_host" {
+  default = "tcp://docker:2345"
+}
+
 variable "splunk_version" {
   default = "8.0.4.1"
 }
