@@ -63,6 +63,11 @@ HA Enabled         false
 
 ## Use Splunk
 
+Visit http://127.0.0.1:8000
+
+- Username: admin
+- Password: vss-password
+
 ## Cleanup
 
 When finished, you can reset like this.

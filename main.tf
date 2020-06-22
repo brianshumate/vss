@@ -40,7 +40,8 @@ terraform {
 
 # "This is fine"
 provider "docker" {
-  host = "unix:///var/run/docker.sock"
+  host = "tcp://127.0.0.1:2376/"
+  # host = "unix:///var/run/docker.sock"
 }
 
 # -----------------------------------------------------------------------
