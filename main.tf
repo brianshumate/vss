@@ -12,6 +12,7 @@ terraform {
 # Variables
 # -----------------------------------------------------------------------
 
+# socket example "unix:///var/run/docker.sock"
 variable "docker_host" {
   default = "tcp://docker:2345"
 }
@@ -44,8 +45,7 @@ terraform {
 
 # "This is fine"
 provider "docker" {
-  host = "tcp://127.0.0.1:2376/"
-  # host = "unix:///var/run/docker.sock"
+  host = var.docker_host
 }
 
 # -----------------------------------------------------------------------
