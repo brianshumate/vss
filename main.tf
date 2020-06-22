@@ -62,7 +62,7 @@ resource "docker_container" "splunk" {
   image = docker_image.splunk.latest
   env   = ["SPLUNK_START_ARGS=--accept-license", "SPLUNK_ETC=/opt/splunk/etc", "SPLUNK_PASSWORD=vss-password"]
   volumes {
-    host_path      = "${path.cwd}/config/default.yml"
+    host_path      = "/home/scrapbook/tutorial/vss/config/default.yml"
     container_path = "/tmp/defaults/default.yml"
   }
   ports {
@@ -114,7 +114,7 @@ resource "docker_container" "telegraf" {
 
 data "template_file" "vault_configuration" {
   template = file(
-    "${path.cwd}/config/vault.hcl",
+    "/home/scrapbook/tutorial/vss/config/vault.hcl",
   )
   vars = {
     telegraf_address = "${docker_container.telegraf.ip_address}"
