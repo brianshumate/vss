@@ -12,7 +12,8 @@ terraform {
 # Variables
 # -----------------------------------------------------------------------
 
-# socket example "unix:///var/run/docker.sock"
+# socket example:
+# export TF_VAR_docker_host="unix:///var/run/docker.sock"
 variable "docker_host" {
   default = "tcp://docker:2345"
 }
@@ -34,7 +35,7 @@ variable "splunk_ip" {
 }
 
 # -----------------------------------------------------------------------
-# Global config
+# Global configuration
 # -----------------------------------------------------------------------
 
 terraform {
@@ -43,13 +44,16 @@ terraform {
   }
 }
 
-# "This is fine"
+# -----------------------------------------------------------------------
+# Provider configuration
+# -----------------------------------------------------------------------
+
 provider "docker" {
   host = var.docker_host
 }
 
 # -----------------------------------------------------------------------
-# Splunk
+# Splunk resources
 # -----------------------------------------------------------------------
 
 resource "docker_image" "splunk" {
@@ -62,7 +66,7 @@ resource "docker_container" "splunk" {
   image = docker_image.splunk.latest
   env   = ["SPLUNK_START_ARGS=--accept-license", "SPLUNK_ETC=/opt/splunk/etc", "SPLUNK_PASSWORD=vss-password"]
   volumes {
-    host_path      = "/home/scrapbook/tutorial/vss/config/default.yml"
+    host_path      = "${path.cwd}/config/default.yml"
     container_path = "/tmp/defaults/default.yml"
   }
   ports {
@@ -73,12 +77,8 @@ resource "docker_container" "splunk" {
 
 }
 
-# output "splunk_ip" {
-#   value = docker_container.splunk.ip_address
-# }
-
 # -----------------------------------------------------------------------
-# Telegraf
+# Telegraf resources
 # -----------------------------------------------------------------------
 
 data "template_file" "telegraf_configuration" {
@@ -104,18 +104,12 @@ resource "docker_container" "telegraf" {
   }
 }
 
-# output "telegraf_ip" {
-#   value = docker_container.telegraf.ip_address
-# }
-
 # -----------------------------------------------------------------------
-# Vault
+# Vault resources
 # -----------------------------------------------------------------------
 
 data "template_file" "vault_configuration" {
-  template = file(
-    "/home/scrapbook/tutorial/vss/config/vault.hcl",
-  )
+  template = file("${path.cwd}/config/vault.hcl")
   vars = {
     telegraf_address = "${docker_container.telegraf.ip_address}"
   }
@@ -149,7 +143,7 @@ resource "docker_container" "vault" {
     protocol = "tcp"
   }
   upload {
-    content = data.template_file.vault_configuration.rendered
+    content = "${data.template_file.vault_configuration.rendered}"
     file    = "/vault/config/server.hcl"
   }
 }
