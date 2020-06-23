@@ -65,17 +65,10 @@ resource "docker_container" "splunk" {
   name  = "vss-splunk"
   image = docker_image.splunk.latest
   env   = ["SPLUNK_START_ARGS=--accept-license", "SPLUNK_PASSWORD=vss-password"]
-
-  #volumes {
-  #  host_path      = "${path.cwd}/config/default.yml"
-  #  container_path = "/tmp/defaults/default.yml"
-  #}
-
   upload {
     content = file("${path.cwd}/config/default.yml")
     file    = "/tmp/defaults/default.yml"
   }
-
   ports {
     internal = "8000"
     external = "8000"
@@ -112,7 +105,7 @@ resource "docker_container" "telegraf" {
 }
 
 # -----------------------------------------------------------------------
-# Vault resources
+# Vault data and resources
 # -----------------------------------------------------------------------
 
 data "template_file" "vault_configuration" {
