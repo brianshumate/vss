@@ -64,7 +64,7 @@ resource "docker_image" "splunk" {
 resource "docker_container" "splunk" {
   name  = "vss-splunk"
   image = docker_image.splunk.latest
-  env   = ["SPLUNK_START_ARGS=--accept-license", "SPLUNK_ETC=/opt/splunk/etc", "SPLUNK_PASSWORD=vss-password"]
+  env   = ["SPLUNK_START_ARGS=--accept-license", "SPLUNK_PASSWORD=vss-password"]
   volumes {
     host_path      = "${path.cwd}/config/default.yml"
     container_path = "/tmp/defaults/default.yml"
@@ -143,7 +143,7 @@ resource "docker_container" "vault" {
     protocol = "tcp"
   }
   upload {
-    content = "${data.template_file.vault_configuration.rendered}"
+    content = data.template_file.vault_configuration.rendered
     file    = "/vault/config/server.hcl"
   }
 }
