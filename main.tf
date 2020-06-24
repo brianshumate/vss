@@ -12,10 +12,10 @@ terraform {
 # Variables
 # -----------------------------------------------------------------------
 
-# socket example:
-# export TF_VAR_docker_host="unix:///var/run/docker.sock"
+# tcp with hostname example:
+# export TF_VAR_docker_host="tcp://docker:2345"
 variable "docker_host" {
-  default = "tcp://docker:2345"
+  default = "unix:///var/run/docker.sock"
 }
 
 variable "splunk_version" {
