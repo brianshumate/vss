@@ -22,6 +22,10 @@ variable "splunk_version" {
   default = "8.0.4.1"
 }
 
+variable "fluentd_splunk_hec_version" {
+  default = "0.0.2"
+}
+
 variable "telegraf_version" {
   default = "1.12.6"
 }
@@ -53,6 +57,15 @@ provider "docker" {
 }
 
 # -----------------------------------------------------------------------
+# Custom network
+# -----------------------------------------------------------------------
+resource "docker_network" "vss_network" {
+  name       = "vss-network"
+  attachable = true
+  ipam_config { subnet = "10.42.10.0/24" }
+}
+
+# -----------------------------------------------------------------------
 # Splunk resources
 # -----------------------------------------------------------------------
 
@@ -74,7 +87,37 @@ resource "docker_container" "splunk" {
     external = "8000"
     protocol = "tcp"
   }
+  networks_advanced {
+    name         = "vss-network"
+    ipv4_address = "10.42.10.100"
+  }
+}
 
+# -----------------------------------------------------------------------
+# Fluentd resources
+# (Uses @brianshumate's fluentd-splunk-hec image)
+# -----------------------------------------------------------------------
+
+resource "docker_image" "fluentd_splunk_hec" {
+  name         = "brianshumate/fluentd-splunk-hec:${var.fluentd_splunk_hec_version}"
+  keep_locally = true
+}
+
+resource "docker_container" "fluentd" {
+  name  = "vss-fluentd"
+  image = docker_image.fluentd_splunk_hec.latest
+  volumes {
+    host_path      = "${path.cwd}/vault-audit-log"
+    container_path = "/vault/logs"
+  }
+  volumes {
+    host_path      = "${path.cwd}/config/fluent"
+    container_path = "/fluentd/etc"
+  }
+  networks_advanced {
+    name         = "vss-network"
+    ipv4_address = "10.42.10.101"
+  }
 }
 
 # -----------------------------------------------------------------------
@@ -101,6 +144,10 @@ resource "docker_container" "telegraf" {
   upload {
     content = data.template_file.telegraf_configuration.rendered
     file    = "/etc/telegraf/telegraf.conf"
+  }
+  networks_advanced {
+    name         = "vss-network"
+    ipv4_address = "10.42.10.102"
   }
 }
 
@@ -142,8 +189,16 @@ resource "docker_container" "vault" {
     external = "8200"
     protocol = "tcp"
   }
+  networks_advanced {
+    name         = "vss-network"
+    ipv4_address = "10.42.10.200"
+  }
   upload {
     content = data.template_file.vault_configuration.rendered
     file    = "/vault/config/server.hcl"
+  }
+  volumes {
+    host_path      = "${path.cwd}/vault-audit-log"
+    container_path = "/vault/logs"
   }
 }

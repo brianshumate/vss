@@ -57,6 +57,7 @@ splunk:
   exec: /opt/splunk/bin/splunk
   group: splunk
   hec:
+    ca: null
     cert: null
     enable: true
     password: null
@@ -91,6 +92,22 @@ splunk:
             minHotIdleSecsBeforeForceRoll: 0
             suspendHotRollByDeleteQuery: 0
             syncMeta: 1
+          vault-audit:
+            coldPath: $SPLUNK_DB/vault-audit/colddb
+            datatype: event
+            enableDataIntegrityControl: 0
+            enableTsidxReduction: 0
+            homePath: $SPLUNK_DB/vault-audit/db
+            maxTotalDataSizeMB: 2048
+            thawedPath: $SPLUNK_DB/vault-audit/thaweddb
+            archiver.enableDataArchive: 0
+            bucketRebuildMemoryHint: 0
+            compressRawdata: 1
+            enableOnlineBucketRepair: 1
+            metric.enableFloatingPointCompression: 1
+            minHotIdleSecsBeforeForceRoll: 0
+            suspendHotRollByDeleteQuery: 0
+            syncMeta: 1
     - key: inputs
       value:
         directory: /opt/splunk/etc/apps/splunk_httpinput/local
@@ -101,6 +118,12 @@ splunk:
             indexes: vault-metrics
             token: 42c0ff33-c00l-7374-87bd-690ac97efc50
             sourcetype: hashicorp_vault_telemetry
+          http://Vault Audit:
+            disabled: 0
+            index: vault-audit
+            indexes: vault-audit
+            token: 12b8a76f-3fa8-4d17-b67f-78d794f042fb
+            sourcetype: hashicorp_vault_audit_log
   home: /opt/splunk
   http_enableSSL: false
   http_enableSSL_cert: null
