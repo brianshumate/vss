@@ -2,10 +2,6 @@ api_addr  = "http://10.0.42.200:8200"
 log_level = "trace"
 ui        = true
 
-# TESTING
-default_max_request_duration = "1s"
-# /TESTING
-
 storage "file" {
   path = "/vault/file"
 }

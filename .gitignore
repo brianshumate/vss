@@ -1,4 +1,4 @@
-fluent-log/vault-audit-log.pos
+vault-logs/vault-audit-log.pos
 vault-logs/vault-audit.log
 tfstate/*
 .terraform
