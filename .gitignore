@@ -1,5 +1,5 @@
-vault-logs/vault-audit-log.pos
-vault-logs/vault-audit.log
+vault-audit-log/vault-audit.log
+vault-audit-log/vault-audit-log.pos
 tfstate/*
 .terraform
 *.plan
