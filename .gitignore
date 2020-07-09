@@ -3,3 +3,4 @@ vault-audit-log/vault-audit-log.pos
 tfstate/*
 .terraform
 *.plan
+vault

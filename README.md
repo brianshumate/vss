@@ -9,7 +9,7 @@ It is a small Docker based stack composed by Terraform, and consisting of:
 1. Telegraf
 1. Splunk
 
-This project uses the [fluentd-splunk-hec]() image for the Fluentd component. It is not generally useful and mostly made for specific uses of this project. Check it out as an example of a custom Fluentd image with additional plugin installed.
+This project uses the [fluentd-splunk-hec](https://github.com/splunk/fluent-plugin-splunk-hec) image for the Fluentd component. It is not generally useful and mostly made for specific uses of this project. Check it out as an example of a custom Fluentd image with additional plugin installed.
 
 ## Why?
 
@@ -77,15 +77,65 @@ $ vault operator init \
       vault login $(grep 'Initial Root Token' ~/vault.init | awk '{print $NF}')
 ```
 
-Finally, enable a file audit device log.
+Enable a file audit device log.
 
 ```shell
 $ vault audit enable file file_path=/vault/logs/vault-audit.log
 ```
 
+Add a "sudo" policy.
+
+```shell
+$ vault policy write sudo - << EOT
+// Example policy: "sudo"
+path "*" {
+  capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+}
+EOT
+```
+
+Enable the userpass auth method.
+
+```shell
+$ vault auth enable userpass
+```
+
+Add a demo user and attach sudo policy.
+
+```shell
+$ vault write auth/userpass/users/demo password=abc.123 policies=sudo
+```
+
+Generate some stuff...
+
+Login 200 times to generate some items in audit and metrics.
+
+```shell
+$ for i in {1..2000}
+    do
+      vault login -method=userpass username=demo password=abc.123
+    done
+```
+
+Create 142 identity entites.
+
+```shell
+$ for i in {1..142}
+    do vault write -f identity/entity
+  done
+```
+
+Create 200 tokens with only the default policy.
+
+```shell
+$ for i in {1..200}
+    do vault token create -policy=default
+  done
+```
+
 ## Use Splunk
 
-Visit http://127.0.0.1:8000
+Visit [Splunk Web](http://127.0.0.1:8000) at 127.0.0.1:8000.
 
 - Username: admin
 - Password: vss-password

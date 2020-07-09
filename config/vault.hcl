@@ -1,7 +1,8 @@
-api_addr     = "http://10.0.42.200:8200"
-cluster_name = "vss"
-log_level    = "trace"
-ui           = true
+api_addr      = "http://10.0.42.200:8200"
+cluster_name  = "vss"
+log_level     = "trace"
+ui            = true
+disable_mlock = true
 
 storage "file" {
   path = "/vault/file"

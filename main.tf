@@ -168,9 +168,11 @@ resource "docker_image" "vault" {
 }
 
 resource "docker_container" "vault" {
-  name     = "vss-vault"
-  image    = docker_image.vault.latest
-  env      = ["SKIP_CHOWN", "VAULT_ADDR=http://127.0.0.1:8200"]
+  name  = "vss-vault"
+  image = docker_image.vault.latest
+  env   = ["SKIP_CHOWN", "VAULT_ADDR=http://127.0.0.1:8200"]
+  # custom binary
+  # command  = ["/vault/vault", "server", "-log-level=trace", "-config=/vault/config"]
   command  = ["vault", "server", "-log-level=trace", "-config=/vault/config"]
   hostname = "vss-vault"
   must_run = true
@@ -197,6 +199,11 @@ resource "docker_container" "vault" {
     content = data.template_file.vault_configuration.rendered
     file    = "/vault/config/server.hcl"
   }
+  # custom vault binary
+  #volumes {
+  #  host_path      = "${path.cwd}/vault"
+  #  container_path = "/vault/vault"
+  # }
   volumes {
     host_path      = "${path.cwd}/vault-audit-log"
     container_path = "/vault/logs"
