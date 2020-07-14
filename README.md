@@ -71,10 +71,10 @@ $ vault operator init \
       -key-shares=1 \
       -key-threshold=1 \
       | head -n3 \
-      | cat > ~/vault.init && \
+      | cat > ./vault.init && \
       vault operator unseal \
-      $(grep 'Unseal Key 1'  ~/vault.init | awk '{print $NF}') && \
-      vault login $(grep 'Initial Root Token' ~/vault.init | awk '{print $NF}')
+      $(grep 'Unseal Key 1'  ./vault.init | awk '{print $NF}') && \
+      vault login $(grep 'Initial Root Token' ./vault.init | awk '{print $NF}')
 ```
 
 Enable a file audit device log.
@@ -111,7 +111,7 @@ Generate some stuff...
 Login 200 times to generate some items in audit and metrics.
 
 ```shell
-$ for i in {1..2000}
+$ for i in {1..200}
     do
       vault login -method=userpass username=demo password=abc.123
     done

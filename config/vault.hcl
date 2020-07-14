@@ -19,3 +19,6 @@ telemetry {
   disable_hostname               = true
   enable_high_cardinality_labels = "*"
 }
+sentinel {
+  additional_enabled_modules = ["http"]
+}

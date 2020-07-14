@@ -19,7 +19,7 @@ variable "docker_host" {
 }
 
 variable "splunk_version" {
-  default = "8.0.4.1"
+  default = "latest"
 }
 
 variable "fluentd_splunk_hec_version" {
@@ -32,10 +32,6 @@ variable "telegraf_version" {
 
 variable "vault_version" {
   default = "1.4.2"
-}
-
-variable "splunk_ip" {
-  default = "42c0ff33-c00l-7374-87bd-690ac97efc50"
 }
 
 # -----------------------------------------------------------------------
@@ -172,8 +168,8 @@ resource "docker_container" "vault" {
   image = docker_image.vault.latest
   env   = ["SKIP_CHOWN", "VAULT_ADDR=http://127.0.0.1:8200"]
   # custom binary
-  # command  = ["/vault/vault", "server", "-log-level=trace", "-config=/vault/config"]
-  command  = ["vault", "server", "-log-level=trace", "-config=/vault/config"]
+  command = ["/vault/vault", "server", "-log-level=trace", "-config=/vault/config"]
+  # command  = ["vault", "server", "-log-level=trace", "-config=/vault/config"]
   hostname = "vss-vault"
   must_run = true
   capabilities {
@@ -200,10 +196,10 @@ resource "docker_container" "vault" {
     file    = "/vault/config/server.hcl"
   }
   # custom vault binary
-  #volumes {
-  #  host_path      = "${path.cwd}/vault"
-  #  container_path = "/vault/vault"
-  # }
+  volumes {
+    host_path      = "${path.cwd}/vault"
+    container_path = "/vault/vault"
+  }
   volumes {
     host_path      = "${path.cwd}/vault-audit-log"
     container_path = "/vault/logs"
